@@ -1,5 +1,6 @@
 package com.fh.fhzhihudaily.ui.main.presenter;
 
+import android.text.format.DateFormat;
 import android.util.Log;
 
 import com.fh.fhzhihudaily.api.retrofit.IZhihuRetrofitApi;
@@ -10,9 +11,11 @@ import com.fh.fhzhihudaily.ui.main.bean.InfoBean;
 import com.fh.fhzhihudaily.ui.main.model.HomeListModel;
 import com.fh.fhzhihudaily.utils.OkHttpUtil;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -65,17 +68,25 @@ public class StartPresenter {
     }
 
     public void requestMoreNet() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
+        final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
         Calendar c = Calendar.getInstance();
         c.add(Calendar.DAY_OF_MONTH, temp--);
-        final String s = dateFormat.format(c.getTime());
-        Log.e("date", s);
+        Date d = c.getTime();
+        final String s = dateFormat.format(d);
+
         api.getBeforeStories(s).enqueue(new Callback<BeforeBean>() {
             @Override
             public void onResponse(Call<BeforeBean> call, Response<BeforeBean> response) {
                 beforeBean = response.body();
                 Log.e("data", beforeBean.toString());
-                requestMoreList(s);
+                Date date = null;
+                try {
+                    date = dateFormat.parse(beforeBean.date);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                SimpleDateFormat sdf = new SimpleDateFormat("MM月dd日");
+                requestMoreList(sdf.format(date)+" "+getWeek(date));
             }
 
             @Override
@@ -85,8 +96,19 @@ public class StartPresenter {
         });
 
     }
-
+    public static String getWeek(Date date){
+        String[] weeks = {"星期日","星期一","星期二","星期三","星期四","星期五","星期六"};
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        int week_index = cal.get(Calendar.DAY_OF_WEEK) - 1;
+        if(week_index<0){
+            week_index = 0;
+        }
+        return weeks[week_index];
+    }
     public void requestLatest() {
+        temp = 0;
+
         List<HomeListModel> homeLists = new ArrayList<>();
 
         homeLists.add(new HomeListModel(HomeListModel.Type.VP, null, null, infoBean.topStories));

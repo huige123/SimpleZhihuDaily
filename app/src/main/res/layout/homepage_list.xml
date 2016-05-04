@@ -21,6 +21,7 @@
         android:paddingRight="18dp"
         android:textColor="#121212"
         android:textSize="18sp"
+        android:maxLines="3"
         tools:text="正文" />
 
     <ImageView
@@ -29,7 +30,8 @@
         android:layout_height="72dp"
         android:layout_alignParentRight="true"
         android:layout_marginRight="20dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="13dp"
         android:background="@android:color/holo_blue_bright"
         android:scaleType="centerCrop" />
 
