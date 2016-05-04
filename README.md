@@ -3,7 +3,6 @@
 
 ##第三方库
 - Retrofit2
-- Okhttp3
 - ButterKnife 
 - Picasso
 - Gson
